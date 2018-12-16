@@ -3,4 +3,4 @@ project(OSHw3)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(OSHw3 main.cpp)
+add_executable(OSHw3 Code_Skeleton/Part1/Semaphore.cpp main.cpp)
