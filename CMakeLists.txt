@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.13)
+project(OSHw3)
+
+set(CMAKE_CXX_STANDARD 11)
+
+add_executable(OSHw3 main.cpp)
