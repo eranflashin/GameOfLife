@@ -36,12 +36,13 @@ void Semaphore::up() {
 void Semaphore::down() {
     //like wait
     pthread_mutex_lock(&(this->lock));
-    while (this->value == 0) {
+    if (this->value == 0) {
         this->waiting++;
         pthread_cond_wait(&(this->cond), &(this->lock));
         this->waiting--;
+    } else {
+        this->value--;
     }
-    this->value--;
     pthread_mutex_unlock(&(this->lock));
 }
 

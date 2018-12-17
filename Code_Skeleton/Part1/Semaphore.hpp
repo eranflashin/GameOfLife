@@ -6,7 +6,7 @@
 class Semaphore {
 public:
 	Semaphore(); // Constructs a new semaphore with a counter of 0
-	explicit Semaphore(unsigned val); // Constructs a new semaphore with a counter of val
+    Semaphore(unsigned val); // Constructs a new semaphore with a counter of val
 	~Semaphore();
 
 
