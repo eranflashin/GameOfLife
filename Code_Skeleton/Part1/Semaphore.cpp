@@ -39,7 +39,6 @@ void Semaphore::down() {
     if (this->value == 0) {
         this->waiting++;
         pthread_cond_wait(&(this->cond), &(this->lock));
-        this->waiting--;
     } else {
         this->value--;
     }
