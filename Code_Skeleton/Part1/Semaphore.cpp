@@ -12,8 +12,6 @@ Semaphore::Semaphore(unsigned val) {
     this->lock = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
     pthread_mutex_init(&(this->lock), nullptr);
 
-    //should we check failure cases?
-
 }
 
 Semaphore::~Semaphore() {

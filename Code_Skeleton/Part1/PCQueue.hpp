@@ -83,7 +83,7 @@ void PCQueue<T>::push(const T &item) {
     pthread_mutex_unlock(&(this->genLock));
 }
 
-
+//TODO: try to change the producerWaiting+producerLock to semaphore. i.e use two semaphores
 
 
 #endif
