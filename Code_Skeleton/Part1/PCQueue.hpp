@@ -26,39 +26,61 @@ public:
 private:
     queue<T> pcQueue;
     Semaphore availItems;
-    pthread_mutex_t lock;
+    pthread_mutex_t genLock;
+    pthread_mutex_t producerLock;
+    pthread_cond_t cond;
+    unsigned int producersWaiting;
 
 };
 // Recommendation: Use the implementation of the std::queue for this exercise
 
 template<typename T>
-PCQueue<T>::PCQueue() : pcQueue(), availItems() {
-    this->lock = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
-    pthread_mutex_init(&(this->lock), nullptr);
+PCQueue<T>::PCQueue() : pcQueue(), availItems(), producersWaiting(0) {
+    this->genLock = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
+    pthread_mutex_init(&(this->genLock), nullptr);
 
+    this->genLock = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
+    pthread_mutex_init(&(this->producerLock), nullptr);
+
+    this->cond = PTHREAD_COND_INITIALIZER;
+    pthread_cond_init(&(this->cond), nullptr);
 }
 
 template<typename T>
 PCQueue<T>::~PCQueue() {
-    pthread_mutex_destroy(&(this->lock));
+    pthread_cond_destroy(&(this->cond));
+    pthread_mutex_destroy(&(this->producerLock));
+    pthread_mutex_destroy(&(this->genLock));
 }
 
 template<typename T>
 T PCQueue<T>::pop() {
     this->availItems.down();
-    pthread_mutex_lock(&(this->lock));
+
+    pthread_mutex_lock(&(this->genLock));
+
+    while (this->producersWaiting > 0) {
+        pthread_cond_wait(&(this->cond), &(this->genLock));
+    }
+
     T item = this->pcQueue.front();
     this->pcQueue.pop();
-    pthread_mutex_unlock(&(this->lock));
+    pthread_mutex_unlock(&(this->genLock));
     return item;
 }
 
 template<typename T>
 void PCQueue<T>::push(const T &item) {
-    pthread_mutex_lock(&(this->lock));
+    pthread_mutex_lock(&(this->producerLock));
+    this->producersWaiting++;
+    pthread_mutex_unlock(&(this->producerLock));
+
+    pthread_mutex_lock(&(this->genLock));
     this->pcQueue.push(item);
+    this->producersWaiting--;
+    pthread_cond_signal(&cond);
     availItems.up();
-    pthread_mutex_unlock(&(this->lock));
+    pthread_mutex_unlock(&(this->genLock));
 }
 
 
