@@ -4,11 +4,8 @@
 #include "Thread.hpp"
 
 class GameThread : public Thread {
-public:
-    ~GameThread() override {};
-
 protected:
-
+    void thread_workload() override;
 };
 
 

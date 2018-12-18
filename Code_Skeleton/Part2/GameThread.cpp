@@ -1,1 +1,6 @@
-#include "GameThread.h"
+#include "GameThread.hpp"
+
+void GameThread::thread_workload() {
+
+
+}
