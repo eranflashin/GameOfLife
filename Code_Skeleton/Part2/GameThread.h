@@ -4,6 +4,10 @@
 #include "Thread.hpp"
 
 class GameThread : public Thread {
+public:
+    ~GameThread() override {};
+
+protected:
 
 };
 
