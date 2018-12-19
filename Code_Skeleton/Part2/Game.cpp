@@ -3,6 +3,9 @@
 /*_____________--------static-functions-declarations-------___________*/
 
 static int neighbors_sum(int row, int column, vector<vector<bool>> &curr);
+static uint curr_board_width(vector<vector<bool>> &curr);
+static uint curr_board_height(vector<vector<bool>> &curr);
+static bool in_borders(int i, int j, vector<vector<bool>> &curr);
 
 /*____________________________________________________________________*/
 
@@ -18,6 +21,32 @@ static int neighbors_sum(int row, int column, vector<vector<bool>> &curr);
 /*--------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------*/
+
+Game::Game(game_params params) {
+    this->m_gen_num=params.n_gen;
+    this->m_thread_num=params.n_thread;
+    this->filename=params.filename;
+    this->interactive_on=params.interactive_on;
+    this->print_on=params.print_on;
+}
+
+Game::~Game() {
+	// later on
+}
+
+const vector<float> Game::gen_hist() const {
+	return m_gen_hist;
+}
+
+const vector<float> Game::tile_hist() const {
+	return m_tile_hist;
+}
+
+uint Game::thread_num() const {
+	return m_thread_num;
+}
+
+
 void Game::run() {
 
 	_init_game(); // Starts the threads and all other variables you need
@@ -36,7 +65,7 @@ void Game::run() {
 void Game::_init_game() { //SERIAL IMPLEMENTATION
 	// Create threads - IRRELEVANT
 	// Create game fields
-	this->curr = parse_lines(filename);
+	this->curr_board = utils::parse_lines(filename);
 	// Start the threads - IRRELEVANT
 	// Testing of your implementation will presume all threads are started here
 }
@@ -49,13 +78,14 @@ void Game::_step(uint curr_gen) {
 	vector<bool> new_row;
 
 	int i=0;
-	for(auto &line : curr){
+	for(auto &line : curr_board){
+	    new_row.clear();
 		int j=0;
 		for (auto &&curr_cell : line) {
 			// Game Logic:
 			if(curr_cell) // If piece is alive
 			{
-				if(neighbors_sum(i,j,curr) == 2 || neighbors_sum(i,j,curr))
+				if(neighbors_sum(i,j,curr_board) == 2 || neighbors_sum(i,j,curr_board)==3)
 				{
 					new_row.push_back(true); // If a piece has 2 or 3 neighbors, it'll stay alive
 				}else{
@@ -65,7 +95,7 @@ void Game::_step(uint curr_gen) {
 
 			else // If a piece is dead
 			{
-				if(neighbors_sum(i,j,curr) == 3)
+				if(neighbors_sum(i,j,curr_board) == 3)
 				{
 					new_row.push_back(true); // If a dead piece has 3 neighbors, it revives
 				}else{
@@ -81,7 +111,7 @@ void Game::_step(uint curr_gen) {
 	}
 
 	// Swap pointers between current and next field
-	this->curr = next;
+	this->curr_board = next;
 }
 
 void Game::_destroy_game(){
@@ -95,9 +125,9 @@ static int neighbors_sum(int row, int column, vector<vector<bool>> &curr)
 	int sum=0;
 	for(int i = row-1; i <= row+1; i++)
 	{
-		for(int j = column-1; j <= row+1; j++)
+		for(int j = column-1; j <= column+1; j++)
 		{
-			if(i > 0 && j > 0) //If target not out of bounds
+			if(in_borders(i,j,curr)) //If target not out of bounds
 			{
 				if(!(i == row && j == column)) //If target is a neighbor
 				{
@@ -128,15 +158,15 @@ inline void Game::print_board(const char *header) {
 			cout << "<------------" << header << "------------>" << endl;
 		
 		// TODO: Print the board
-		cout << u8"╔" << string(u8"═") * field_width << u8"╗" << endl;
-		for (uint i = 0; i < field_height ++i) {
+		cout << u8"╔" << string(u8"═") * curr_board_width(curr_board) << u8"╗" << endl;
+		for (uint i = 0; i < curr_board_height(curr_board); ++i) {
 			cout << u8"║";
-			for (uint j = 0; j < field_width; ++j) {
-				cout << (this.curr[i][j] ? u8"█" : u8"░");
+			for (uint j = 0; j < curr_board_width(curr_board); ++j) {
+				cout << (this->curr_board[i][j] ? u8"█" : u8"░");
 			}
 			cout << u8"║" << endl;
 		}
-		cout << u8"╚" << string(u8"═") * field_width << u8"╝" << endl;
+		cout << u8"╚" << string(u8"═") * curr_board_width(curr_board) << u8"╝" << endl;
 
 		// Display for GEN_SLEEP_USEC micro-seconds on screen 
 		if(interactive_on)
@@ -146,6 +176,20 @@ inline void Game::print_board(const char *header) {
 }
 
 
+static bool in_borders(int i, int j, vector<vector<bool>> &curr){
+	return ((i>=0 && j>=0) && (i<curr_board_height(curr) && j<curr_board_width(curr)));
+}
+
+static uint curr_board_width(vector<vector<bool>> &curr) {
+	return curr.front().size();
+}
+
+static uint curr_board_height(vector<vector<bool>> &curr) {
+	return curr.size();
+}
+
+
+
 /* Function sketch to use for printing the board. You will need to decide its placement and how exactly 
 	to bring in the field's parameters. 
 
@@ -153,7 +197,7 @@ inline void Game::print_board(const char *header) {
 		for (uint i = 0; i < field_height ++i) {
 			cout << u8"║";
 			for (uint j = 0; j < field_width; ++j) {
-				cout << (this.curr[i][j] ? u8"█" : u8"░");
+				cout << (this.curr_board[i][j] ? u8"█" : u8"░");
 			}
 			cout << u8"║" << endl;
 		}

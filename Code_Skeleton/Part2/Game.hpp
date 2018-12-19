@@ -51,6 +51,8 @@ protected: // All members here are protected, instead of private for testing pur
 	bool print_on; // Allows the printing of the board. Turn this off when you are checking performance (Dry 3, last question)
 	
 	// TODO: Add in your variables and synchronization primitives
-    vector<vector<bool>> curr; //The current board
+    vector<vector<bool>> curr_board; //The current board
+    string filename;
+
 };
 #endif

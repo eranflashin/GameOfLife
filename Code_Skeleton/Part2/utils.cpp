@@ -82,7 +82,8 @@ vector<bool> convert_to_bool(vector<string> vecOfOneZeroStrs)
 	vector<bool> newbool;
 	for(auto &it : vecOfOneZeroStrs)
 	{
-		newbool.push_back(it.compare("0")==0);
+
+		newbool.push_back(it=="1");
 	}
 	return newbool;
 }
