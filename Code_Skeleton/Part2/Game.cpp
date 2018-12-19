@@ -17,23 +17,85 @@ void Game::run() {
 	_destroy_game();
 }
 
-void Game::_init_game() {
-	// Create threads
+void Game::_init_game() { //SERIAL IMPLEMENTATION
+	// Create threads - IRRELEVANT
 	// Create game fields
-	// Start the threads
+	this->curr = parse_lines(filename);
+	// Start the threads - IRRELEVANT
 	// Testing of your implementation will presume all threads are started here
 }
 
 void Game::_step(uint curr_gen) {
-	// Push jobs to queue
-	// Wait for the workers to finish calculating 
-	// Swap pointers between current and next field 
+	// Push jobs to queue - IRRELEVANT
+	// Wait for the workers to finish calculating  -IRRELEVANT
+	// For the serial implementation, the game will be implemented here
+	vector<vector<bool>> next;
+	vector<bool> new_row;
+	for(int i = 0; i < curr.size(); i++) //A loop that runs for the numbers of rows in the matrix
+	{
+		for(int j = 0; j < curr.begin().size(); j++) //A loop that runs for the number of columns in the matrix
+		{
+			// Game Logic:
+			if(curr[i][j]) // If piece is alive
+			{
+				if(neighbors_sum(i,j,curr) == 2 || neighbors_sum(i,j,curr))
+				{
+					new_row.push_back(true); // If a piece has 2 or 3 neighbors, it'll stay alive
+				}
+
+				else
+				{
+					new_row.push_back(false); // Otherwise it'll die
+				}
+			}
+
+			else // If a piece is dead
+			{
+				if(neighbors_sum(i,j,curr) == 3)
+				{
+					new_row.push_back(true); // If a dead piece has 3 neighbors, it revives
+				}
+
+				else
+				{
+					new_row.push_back(false); //Otherwise it stays dead
+				}
+			}
+
+		}
+		next.push_back(new_row);
+	}
+	// Swap pointers between current and next field
+	this->curr = &next;
+	return;
 }
 
 void Game::_destroy_game(){
 	// Destroys board and frees all threads and resources 
 	// Not implemented in the Game's destructor for testing purposes. 
 	// Testing of your implementation will presume all threads are joined here
+}
+
+int neighbors_sum(int row, int column, vector<vector<bool>> curr);
+{
+	int sum;
+	for(int i = row-1; i <= row+1; i++)
+	{
+		for(int j = column-1; j <= row+1; j++)
+		{
+			if(i > 0 && j > 0) //If target not out of bounds
+			{
+				if(!(i == row && j == column)) //If target is a neighbor
+				{
+					if(curr[i][j]) //If neighbor is alive
+					{
+						sum++;
+					}
+				}
+			}
+		}
+	}
+	return sum;
 }
 
 /*--------------------------------------------------------------------------------
@@ -51,7 +113,16 @@ inline void Game::print_board(const char *header) {
 		if (header != NULL)
 			cout << "<------------" << header << "------------>" << endl;
 		
-		// TODO: Print the board 
+		// TODO: Print the board
+		cout << u8"╔" << string(u8"═") * field_width << u8"╗" << endl;
+		for (uint i = 0; i < field_height ++i) {
+			cout << u8"║";
+			for (uint j = 0; j < field_width; ++j) {
+				cout << (this.curr[i][j] ? u8"█" : u8"░");
+			}
+			cout << u8"║" << endl;
+		}
+		cout << u8"╚" << string(u8"═") * field_width << u8"╝" << endl;
 
 		// Display for GEN_SLEEP_USEC micro-seconds on screen 
 		if(interactive_on)
@@ -68,7 +139,7 @@ inline void Game::print_board(const char *header) {
 		for (uint i = 0; i < field_height ++i) {
 			cout << u8"║";
 			for (uint j = 0; j < field_width; ++j) {
-				cout << (field[i][j] ? u8"█" : u8"░");
+				cout << (this.curr[i][j] ? u8"█" : u8"░");
 			}
 			cout << u8"║" << endl;
 		}
