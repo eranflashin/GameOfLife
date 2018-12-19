@@ -3,11 +3,17 @@
 
 #include "Thread.hpp"
 
+enum Status {Running,Waiting,Finished,Noticed,Poison};
+
+
 class GameThread : public Thread {
 public:
     GameThread(uint id);
 protected:
     void thread_workload() override;
+    Status status;
+
+
 };
 
 
