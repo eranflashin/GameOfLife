@@ -10,6 +10,7 @@ namespace utils {
 	vector<string> split(const string& s, char delimiter); //Splits a string 
 };
 
+vector<bool> convert_to_bool(vector<string> s);
 string repeat(string str, const size_t n);
 string operator*(string str, size_t n);
 
