@@ -1,4 +1,4 @@
-#include <utils.hpp>
+#include "utils.hpp"
 
 /*--------------------------------------------------------------------------------
 									Misc Utils Implementation
@@ -31,17 +31,16 @@ vector<string> utils::split(const string& s, char delimiter)
 	return tokens;
 }
 
-vector<vector<bool>> utils::parse_lines(const& string filename)
+vector<vector<bool>> utils::parse_lines(const string& filename)
 {
 	vector<vector<bool>> parsed_data;
 	vector<string> raw_data = utils::read_lines(filename);
-	vector<bool> temp;
-	for(int i = 0; i < raw_data.size(); i++) //For each in the file:
-	{
-		raw_data[i] = utils::split(raw_data[i], ' '); //split it to a vector of 0's and 1's
-		temp = convert_to_bool(raw_data[i]); //convert it to boolean
-		parsed_data.push_back(temp); //Save it in the matrix
+
+	for (auto &it : raw_data) {
+		vector<string> current_string_split=utils::split(it,' ');
+		parsed_data.push_back(convert_to_bool(current_string_split));
 	}
+
 	return parsed_data;
 }
 
@@ -78,19 +77,12 @@ string operator*(string str, size_t n)
 
 //Our Extension:
 
-vector<bool> convert_to_bool(vector<string> s)
+vector<bool> convert_to_bool(vector<string> vecOfOneZeroStrs)
 {
 	vector<bool> newbool;
-	for(auto i = s.begin(); i != s.end(); i++)
+	for(auto &it : vecOfOneZeroStrs)
 	{
-		if(i == "0")
-		{
-			newbool.push_down(false);
-		}
-		else
-		{
-			newbool.push_down(true);
-		}
+		newbool.push_back(it.compare("0")==0);
 	}
 	return newbool;
 }

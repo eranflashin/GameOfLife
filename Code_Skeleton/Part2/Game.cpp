@@ -1,6 +1,22 @@
 #include "Game.hpp"
+
+/*_____________--------static-functions-declarations-------___________*/
+
+static int neighbors_sum(int row, int column, vector<vector<bool>> &curr);
+
+/*____________________________________________________________________*/
+
+/**
+ *
+ * neighbour_sum other ranges check ?
+ * Inheriting Thread: one consumer one producer
+ *
+ *
+ *
+ * **/
+
 /*--------------------------------------------------------------------------------
-								
+
 --------------------------------------------------------------------------------*/
 void Game::run() {
 
@@ -31,20 +47,18 @@ void Game::_step(uint curr_gen) {
 	// For the serial implementation, the game will be implemented here
 	vector<vector<bool>> next;
 	vector<bool> new_row;
-	for(int i = 0; i < curr.size(); i++) //A loop that runs for the numbers of rows in the matrix
-	{
-		for(int j = 0; j < curr.begin().size(); j++) //A loop that runs for the number of columns in the matrix
-		{
+
+	int i=0;
+	for(auto &line : curr){
+		int j=0;
+		for (auto &&curr_cell : line) {
 			// Game Logic:
-			if(curr[i][j]) // If piece is alive
+			if(curr_cell) // If piece is alive
 			{
 				if(neighbors_sum(i,j,curr) == 2 || neighbors_sum(i,j,curr))
 				{
 					new_row.push_back(true); // If a piece has 2 or 3 neighbors, it'll stay alive
-				}
-
-				else
-				{
+				}else{
 					new_row.push_back(false); // Otherwise it'll die
 				}
 			}
@@ -54,20 +68,20 @@ void Game::_step(uint curr_gen) {
 				if(neighbors_sum(i,j,curr) == 3)
 				{
 					new_row.push_back(true); // If a dead piece has 3 neighbors, it revives
-				}
-
-				else
-				{
+				}else{
 					new_row.push_back(false); //Otherwise it stays dead
 				}
 			}
 
+			j++;
 		}
+
+		i++;
 		next.push_back(new_row);
 	}
+
 	// Swap pointers between current and next field
-	this->curr = &next;
-	return;
+	this->curr = next;
 }
 
 void Game::_destroy_game(){
@@ -76,9 +90,9 @@ void Game::_destroy_game(){
 	// Testing of your implementation will presume all threads are joined here
 }
 
-int neighbors_sum(int row, int column, vector<vector<bool>> curr);
+static int neighbors_sum(int row, int column, vector<vector<bool>> &curr)
 {
-	int sum;
+	int sum=0;
 	for(int i = row-1; i <= row+1; i++)
 	{
 		for(int j = column-1; j <= row+1; j++)

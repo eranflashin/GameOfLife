@@ -50,8 +50,7 @@ protected: // All members here are protected, instead of private for testing pur
 	bool interactive_on; // Controls interactive mode - that means, prints the board as an animation instead of a simple dump to STDOUT
 	bool print_on; // Allows the printing of the board. Turn this off when you are checking performance (Dry 3, last question)
 	
-	// TODO: Add in your variables and synchronization primitives  
+	// TODO: Add in your variables and synchronization primitives
     vector<vector<bool>> curr; //The current board
-    int neighbors_sum(int i, int j, vector<vector<bool>> curr);
 };
 #endif
