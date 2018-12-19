@@ -63,8 +63,13 @@ void Game::run() {
 }
 
 void Game::_init_game() { //SERIAL IMPLEMENTATION
-	// Create threads - IRRELEVANT
-	// Create game fields
+	// Create threads
+	for(uint id=0; id<m_thread_num; id++){
+		m_threadpool.push_back(new GameThread(id));
+	}
+
+	pcQueue=PCQueue<Thread*>();
+
 	this->curr_board = utils::parse_lines(filename);
 	// Start the threads - IRRELEVANT
 	// Testing of your implementation will presume all threads are started here

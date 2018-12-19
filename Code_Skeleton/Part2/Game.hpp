@@ -3,6 +3,7 @@
 
 #include "utils.hpp"
 #include "GameThread.hpp"
+#include "../Part1/PCQueue.hpp"
 
 /*--------------------------------------------------------------------------------
 								  Auxiliary Structures
@@ -53,6 +54,7 @@ protected: // All members here are protected, instead of private for testing pur
 	// TODO: Add in your variables and synchronization primitives
     vector<vector<bool>> curr_board; //The current board
     string filename;
+    PCQueue<Thread*> pcQueue;
 
 };
 #endif
