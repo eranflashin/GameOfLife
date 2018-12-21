@@ -3,7 +3,7 @@
 
 #include "utils.hpp"
 #include "GameThread.hpp"
-#include "../Part1/PCQueue.hpp"
+#include "../Part1/Alter/PCQueuetag.hpp"
 
 /*--------------------------------------------------------------------------------
 								  Auxiliary Structures
