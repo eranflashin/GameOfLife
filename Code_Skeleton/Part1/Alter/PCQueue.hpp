@@ -1,8 +1,8 @@
 #ifndef _QUEUEL_H
 #define _QUEUEL_H
 
-#include "Headers.hpp"
-#include "Semaphore.hpp"
+#include "../Headers.hpp"
+#include "../Semaphore.hpp"
 // Single Producer - Multiple Consumer queue
 template <typename T>class PCQueue
 {
@@ -25,63 +25,72 @@ public:
 
 private:
     queue<T> pcQueue;
-    Semaphore availItems;
     pthread_mutex_t global_lock;
-    pthread_mutex_t producerLock;
     pthread_cond_t pop_allowed;
-    unsigned int producersWaiting;
-
+    pthread_cond_t push_allowed;
+    unsigned int producers_waiting;
+    unsigned int num_of_consumers;
+    unsigned int available_items;
 };
 // Recommendation: Use the implementation of the std::queue for this exercise
 
 template<typename T>
-PCQueue<T>::PCQueue() : pcQueue(), availItems(), producersWaiting(0) {
+PCQueue<T>::PCQueue() : pcQueue(), producers_waiting(0), available_items(0), num_of_consumers(0) {
     this->global_lock = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
     pthread_mutex_init(&(this->global_lock), nullptr);
 
-    this->global_lock = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
-    pthread_mutex_init(&(this->producerLock), nullptr);
-
     this->pop_allowed = PTHREAD_COND_INITIALIZER;
     pthread_cond_init(&(this->pop_allowed), nullptr);
+
+    this->push_allowed = PTHREAD_COND_INITIALIZER;
+    pthread_cond_init(&(this->push_allowed), nullptr);
 }
 
 template<typename T>
 PCQueue<T>::~PCQueue() {
+    pthread_cond_destroy(&(this->push_allowed));
     pthread_cond_destroy(&(this->pop_allowed));
-    pthread_mutex_destroy(&(this->producerLock));
     pthread_mutex_destroy(&(this->global_lock));
 }
 
 template<typename T>
 T PCQueue<T>::pop() {
-    this->availItems.down();
+   pthread_mutex_lock(&global_lock);
+   num_of_consumers++;
+   while(producers_waiting > 0 || available_items == 0){
+       pthread_cond_wait(&pop_allowed,&global_lock);
+   }
 
-    pthread_mutex_lock(&(this->global_lock));
+   available_items--;
+   T item = pcQueue.front();
+   pcQueue.pop();
 
-    while (this->producersWaiting > 0) {
-        pthread_cond_wait(&(this->pop_allowed), &(this->global_lock));
-    }
+   num_of_consumers--;
 
-    T item = this->pcQueue.front();
-    this->pcQueue.pop();
-    pthread_mutex_unlock(&(this->global_lock));
-    return item;
+   if(num_of_consumers == 0){
+       pthread_cond_signal(&push_allowed);
+   }
+
+   pthread_mutex_unlock(&global_lock);
+   return item;
 }
 
 template<typename T>
 void PCQueue<T>::push(const T &item) {
-    pthread_mutex_lock(&(this->producerLock));
-    this->producersWaiting++;
-    pthread_mutex_unlock(&(this->producerLock));
+    pthread_mutex_lock(&global_lock);
+    producers_waiting++;
 
-    pthread_mutex_lock(&(this->global_lock));
-    this->pcQueue.push(item);
-    this->producersWaiting--;
-    availItems.up();
-    //swap
+    while(num_of_consumers > 0){
+        pthread_cond_wait(&push_allowed,&global_lock);
+    }
+
+    producers_waiting--;
+    pcQueue.push(item);
+    available_items++;
+
     pthread_cond_signal(&pop_allowed);
-    pthread_mutex_unlock(&(this->global_lock));
+
+    pthread_mutex_unlock(&global_lock);
 }
 
 
