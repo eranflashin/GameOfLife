@@ -4,16 +4,18 @@
 
 --------------------------------------------------------------------------------*/
 
-Game::Game(game_params params) {
-    this->m_gen_num=params.n_gen;
-    this->m_thread_num=params.n_thread;
-    this->filename=params.filename;
-    this->interactive_on=params.interactive_on;
-    this->print_on=params.print_on;
+Game::Game(game_params params) : 
+curr(utils::parse_lines(params.filename)), next(board_height(curr)),
+pcQueue(), m_threadpool(), m_tile_hist(), m_gen_hist(){
+    m_gen_num=params.n_gen;
+	m_thread_num=min(params.n_thread, board_height(curr));
+    interactive_on=params.interactive_on;
+    print_on=params.print_on;
+    jobs=makeJobs(curr,m_thread_num);
 }
 
 Game::~Game() {
-	// later on
+	_destroy_game();
 }
 
 const vector<float> Game::gen_hist() const {
@@ -44,40 +46,39 @@ void Game::run() {
 	_destroy_game();
 }
 
-void Game::_init_game() { //SERIAL IMPLEMENTATION
-	this->curr_board = utils::parse_lines(filename);
-
+void Game::_init_game() {
 	// Create threads
 	for(uint id=0; id<m_thread_num; id++){
-		m_threadpool.push_back(new GameThread(id));
+		m_threadpool.push_back(new ConsumerThread(id,curr,next,m_tile_hist,pcQueue));
 	}
-
-	pcQueue=PCQueue<Thread*>();
-
-	for(auto &thrd: m_threadpool){
-		thrd->start();
+	// Create game fields - V (done in constructor)
+	// Start the threads
+	for(auto &thread: m_threadpool){
+		thread->start();
 	}
+	//ToDo: can we assume start return ok?
 
 	// Testing of your implementation will presume all threads are started here
 }
 
 void Game::_step(uint curr_gen) {
-	// Push jobs to queue - IRRELEVANT
-	for(auto& thrd: m_threadpool){
-
-
-
-		pcQueue.push(thrd);
+	// Push jobs to queue
+	for(auto &job : jobs){
+		pcQueue.push(job);
+	}
+	// Wait for the workers to finish calculating
+	for(auto &thread : m_threadpool){
+		thread->join();
 	}
 
-	while(size(PCQueue)!= 0)
-	{
-		if()
+	if(curr_gen==m_gen_num-1){
+		for(auto &thread: m_threadpool){
+			thread->start();
+		}
 	}
 
-	// Wait for the workers to finish calculating  -IRRELEVANT
-	// For the serial implementation, the game will be implemented here
-
+	// Swap pointers between current and next field
+	curr.swap(next);
 }
 
 void Game::_destroy_game(){
@@ -104,15 +105,15 @@ inline void Game::print_board(const char *header) {
 			cout << "<------------" << header << "------------>" << endl;
 		
 		// TODO: Print the board
-		cout << u8"╔" << string(u8"═") * curr_board_width(curr_board) << u8"╗" << endl;
-		for (uint i = 0; i < curr_board_height(curr_board); ++i) {
+		cout << u8"╔" << string(u8"═") * board_width(curr) << u8"╗" << endl;
+		for (uint i = 0; i < board_height(curr); ++i) {
 			cout << u8"║";
-			for (uint j = 0; j < curr_board_width(curr_board); ++j) {
-				cout << (this->curr_board[i][j] ? u8"█" : u8"░");
+			for (uint j = 0; j < board_width(curr); ++j) {
+				cout << (this->curr[i][j] ? u8"█" : u8"░");
 			}
 			cout << u8"║" << endl;
 		}
-		cout << u8"╚" << string(u8"═") * curr_board_width(curr_board) << u8"╝" << endl;
+		cout << u8"╚" << string(u8"═") * board_width(curr) << u8"╝" << endl;
 
 		// Display for GEN_SLEEP_USEC micro-seconds on screen 
 		if(interactive_on)

@@ -6,7 +6,7 @@
 class Semaphore {
 public:
 	Semaphore(); // Constructs a new semaphore with a counter of 0
-    Semaphore(unsigned val); // Constructs a new semaphore with a counter of val
+    Semaphore(uint val); // Constructs a new semaphore with a counter of val
 	~Semaphore();
 
 
@@ -14,7 +14,7 @@ public:
 	void down(); // Block untill counter >0, and mark - One thread has entered the critical section.
 
 private:
-    unsigned int value, waiting;
+    uint value, waiting;
 	pthread_cond_t cond;
 	pthread_mutex_t lock;
 };

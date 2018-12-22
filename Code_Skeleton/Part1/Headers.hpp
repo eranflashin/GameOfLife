@@ -40,6 +40,7 @@ using std::chrono::time_point;
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::min;
 
 typedef unsigned int uint;
 typedef vector<vector<bool>> bool_mat;

@@ -2,7 +2,7 @@
 
 Semaphore::Semaphore() : Semaphore(0) {}
 
-Semaphore::Semaphore(unsigned val) {
+Semaphore::Semaphore(uint val) {
     this->value = val;
     this->waiting = 0;
 

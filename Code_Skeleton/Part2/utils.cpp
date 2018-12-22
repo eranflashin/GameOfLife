@@ -31,13 +31,13 @@ vector<string> utils::split(const string& s, char delimiter)
 	return tokens;
 }
 
-vector<vector<bool>> utils::parse_lines(const string& filename)
+bool_mat utils::parse_lines(const string& filename)
 {
-	vector<vector<bool>> parsed_data;
+	bool_mat parsed_data;
 	vector<string> raw_data = utils::read_lines(filename);
 
 	for (auto &it : raw_data) {
-		vector<string> current_string_split=utils::split(it,' ');
+		vector<string> current_string_split=utils::split(it,DEF_MAT_DELIMITER);
 		parsed_data.push_back(convert_to_bool(current_string_split));
 	}
 
@@ -75,7 +75,7 @@ string operator*(string str, size_t n)
 	return repeat(move(str), n);
 }
 
-//Our Extension:
+/*____________________Our Extension:__________________*/
 
 vector<bool> convert_to_bool(vector<string> vecOfOneZeroStrs)
 {
