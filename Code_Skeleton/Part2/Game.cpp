@@ -67,26 +67,35 @@ void Game::_step(uint curr_gen) {
 		pcQueue.push(job);
 	}
 	// Wait for the workers to finish calculating
-	for(auto &thread : m_threadpool){
-		thread->join();
-	}
 
-	if(curr_gen==m_gen_num-1){
-		for(auto &thread: m_threadpool){
-			thread->start();
-		}
-	}
+	/**
+	 * we need two things:
+	 * one mutex, kept statically in ConsumerThread (one for all instantiations).
+	 * It will lock the access to the shared tile time vector.
+	 *
+	 * one cond variable jumping back to here in case one thread notices the PCQueue is empty (before it is bolcked)
+	 * (is it ok that sometimes it might send a signal but nno one catches- overhead ? )
+	 */
 
 	// Swap pointers between current and next field
 	curr.swap(next);
 }
 
 void Game::_destroy_game(){
-	// Destroys board and frees all threads and resources 
-	// Not implemented in the Game's destructor for testing purposes. 
-	// Testing of your implementation will presume all threads are joined here
-}
+	//ends the polling of PCQueue (done by the threads)
+    for (auto &poison : makePoison(m_thread_num)) {
+        pcQueue.push(poison);
+    }
 
+    for(auto &thread : m_threadpool){
+    	thread->join();
+    }
+
+    // Destroys board and frees all threads and resources
+	// Not implemented in the Game's destructor for testing purposes.
+	// Testing of your implementation will presume all threads are joined here
+
+}
 
 
 /*--------------------------------------------------------------------------------

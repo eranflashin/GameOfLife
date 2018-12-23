@@ -15,6 +15,7 @@ namespace board_utils{
     bool in_borders(int i, int j, bool_mat &board);
     int neighbors_sum(int row, int column, bool_mat &board);
     vector<Job> makeJobs (bool_mat &board, uint num_threads);
+    vector<Job> makePoison(uint num_threads);
 }
 
 

@@ -54,9 +54,14 @@
 
     jobVec.push_back(Job{height_board-rows_last_job,height_board,false});
 
-     for(int i=0; i<num_threads; i++){
-         jobVec.push_back(Job{0,0,true});
-     }
-
     return jobVec;
+}
+
+
+vector<Job> board_utils::makePoison(uint num_threads) {
+    vector<Job> poisonVec;
+    for (int i = 0; i < num_threads; i++) {
+        poisonVec.push_back(Job{0, 0, true});
+    }
+    return poisonVec;
 }
