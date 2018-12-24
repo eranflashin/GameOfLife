@@ -1,7 +1,7 @@
 #include "ConsumerThread.hpp"
 
-ConsumerThread::ConsumerThread(uint id, bool_mat &curr, bool_mat &next, vector<float> &tile_hist,PCQueue<Job> &pcQueue)
-:Thread(id),curr(curr), next(next), tile_hist(tile_hist), pcQueue(pcQueue) { };
+ConsumerThread::ConsumerThread(uint id, bool_mat &curr, bool_mat &next, vector<float> &tile_hist,PCQueue<Job> &pcQueue, Semaphore &barrier)
+:Thread(id),curr(curr), next(next), tile_hist(tile_hist), pcQueue(pcQueue), barrier(barrier) { };
 
 void ConsumerThread::thread_workload() {
   while(true){
@@ -15,6 +15,8 @@ void ConsumerThread::thread_workload() {
 
       //start timer
       execute(job);
+      barrier.down();
+
       //stop timer;
 
       //append duration to shared tile history vec
@@ -22,6 +24,8 @@ void ConsumerThread::thread_workload() {
 }
 
 void ConsumerThread::execute(Job &job) {
+
+
   vector<bool> new_row;
 
   int i=job.begin_row;

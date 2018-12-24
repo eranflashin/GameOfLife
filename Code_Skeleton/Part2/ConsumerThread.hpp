@@ -11,12 +11,15 @@ using board_utils::neighbors_sum;
 
 class ConsumerThread : public Thread {
 public:
-    ConsumerThread(uint id, bool_mat &curr, bool_mat &next, vector<float> &tile_hist,PCQueue<Job> &pcQueue);
+    ConsumerThread(uint id, bool_mat &curr, bool_mat &next, vector<float> &tile_hist,PCQueue<Job> &pcQueue,
+            Semaphore &barrier);
+    ~ConsumerThread()= default;
 
 protected:
     bool_mat &curr,&next;
     vector<float> &tile_hist;
     PCQueue<Job> &pcQueue;
+    Semaphore &barrier;
 
     void thread_workload() override;
     void execute(Job &job);

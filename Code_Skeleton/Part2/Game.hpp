@@ -60,5 +60,6 @@ private:
 	bool_mat curr,next;
     PCQueue<Job> pcQueue;
     vector<Job> jobs;
+    Semaphore barrier;
 };
 #endif

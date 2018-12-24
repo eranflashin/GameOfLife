@@ -2,11 +2,14 @@
 
 /*--------------------------------------------------------------------------------
 
+ ToDo: can we assume start return ok?
+        is it ok in workload to write into different rows of next simultanously?
+        ConsumerProducerLock- is it too complex?
 --------------------------------------------------------------------------------*/
 
 Game::Game(game_params params) : 
 curr(utils::parse_lines(params.filename)), next(board_height(curr)),
-pcQueue(), m_threadpool(), m_tile_hist(), m_gen_hist(){
+pcQueue(), m_threadpool(), m_tile_hist(), m_gen_hist(),barrier(){
     m_gen_num=params.n_gen;
 	m_thread_num=min(params.n_thread, board_height(curr));
     interactive_on=params.interactive_on;
@@ -49,14 +52,13 @@ void Game::run() {
 void Game::_init_game() {
 	// Create threads
 	for(uint id=0; id<m_thread_num; id++){
-		m_threadpool.push_back(new ConsumerThread(id,curr,next,m_tile_hist,pcQueue));
+		m_threadpool.push_back(new ConsumerThread(id,curr,next,m_tile_hist,pcQueue,barrier));
 	}
 	// Create game fields - V (done in constructor)
 	// Start the threads
 	for(auto &thread: m_threadpool){
 		thread->start();
 	}
-	//ToDo: can we assume start return ok?
 
 	// Testing of your implementation will presume all threads are started here
 }
@@ -65,17 +67,11 @@ void Game::_step(uint curr_gen) {
 	// Push jobs to queue
 	for(auto &job : jobs){
 		pcQueue.push(job);
+		barrier.up();
 	}
-	// Wait for the workers to finish calculating
 
-	/**
-	 * we need two things:
-	 * one mutex, kept statically in ConsumerThread (one for all instantiations).
-	 * It will lock the access to the shared tile time vector.
-	 *
-	 * one cond variable jumping back to here in case one thread notices the PCQueue is empty (before it is bolcked)
-	 * (is it ok that sometimes it might send a signal but nno one catches- overhead ? )
-	 */
+	// Wait for the workers to finish calculating
+	barrier.wait();
 
 	// Swap pointers between current and next field
 	curr.swap(next);
@@ -88,13 +84,18 @@ void Game::_destroy_game(){
     }
 
     for(auto &thread : m_threadpool){
-    	thread->join();
+        thread->join();
     }
+
+    while(!m_threadpool.empty()){
+        delete m_threadpool.back();
+        m_threadpool.pop_back();
+    }
+
 
     // Destroys board and frees all threads and resources
 	// Not implemented in the Game's destructor for testing purposes.
 	// Testing of your implementation will presume all threads are joined here
-
 }
 
 
