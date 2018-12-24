@@ -1,7 +1,8 @@
 #include "ConsumerThread.hpp"
 
-ConsumerThread::ConsumerThread(uint id, bool_mat &curr, bool_mat &next, vector<float> &tile_hist,PCQueue<Job> &pcQueue, Semaphore &barrier)
-:Thread(id),curr(curr), next(next), tile_hist(tile_hist), pcQueue(pcQueue), barrier(barrier) { };
+
+ConsumerThread::ConsumerThread(uint id, bool_mat &curr, bool_mat &next, vector<float> &tile_hist,PCQueue<Job> &pcQueue, Semaphore &barrier, pthread_mutex_t &timerLock)
+:Thread(id),curr(curr), next(next), tile_hist(tile_hist), pcQueue(pcQueue), barrier(barrier), timerLock(timerLock) { };
 
 void ConsumerThread::thread_workload() {
   while(true){
@@ -14,12 +15,19 @@ void ConsumerThread::thread_workload() {
       }
 
       //start timer
+      auto gen_start = std::chrono::system_clock::now();
+      //execute job
       execute(job);
+     //stop timer;
+      auto gen_end = std::chrono::system_clock::now();
       barrier.down();
 
-      //stop timer;
 
       //append duration to shared tile history vec
+      pthread_mutex_lock(&timerLock);
+      tile_hist.push_back((float)std::chrono::duration_cast<std::chrono::microseconds>(gen_end - gen_start).count());
+      pthread_mutex_unlock(&timerLock);
+
   }
 }
 

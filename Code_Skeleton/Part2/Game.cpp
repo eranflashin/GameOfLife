@@ -15,6 +15,8 @@ pcQueue(), m_threadpool(), m_tile_hist(), m_gen_hist(),barrier(){
     interactive_on=params.interactive_on;
     print_on=params.print_on;
     jobs=makeJobs(curr,m_thread_num);
+    timerLock=PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
+    pthread_mutex_init(&timerLock, nullptr);
 }
 
 Game::~Game() {
@@ -52,7 +54,7 @@ void Game::run() {
 void Game::_init_game() {
 	// Create threads
 	for(uint id=0; id<m_thread_num; id++){
-		m_threadpool.push_back(new ConsumerThread(id,curr,next,m_tile_hist,pcQueue,barrier));
+		m_threadpool.push_back(new ConsumerThread(id,curr,next,m_tile_hist,pcQueue,barrier,timerLock));
 	}
 	// Create game fields - V (done in constructor)
 	// Start the threads
@@ -94,6 +96,7 @@ void Game::_destroy_game(){
 
 
     // Destroys board and frees all threads and resources
+    pthread_mutex_destroy(&timerLock);
 	// Not implemented in the Game's destructor for testing purposes.
 	// Testing of your implementation will presume all threads are joined here
 }

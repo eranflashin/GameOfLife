@@ -61,5 +61,6 @@ private:
     PCQueue<Job> pcQueue;
     vector<Job> jobs;
     Semaphore barrier;
+    pthread_mutex_t timerLock;
 };
 #endif
