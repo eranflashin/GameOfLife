@@ -4,7 +4,7 @@
 #include "utils.hpp"
 #include "board_utils.hpp"
 #include "ConsumerThread.hpp"
-#include "../Part1/PCQueue.hpp"
+#include "PCQueue.hpp"
 
 using namespace board_utils;
 

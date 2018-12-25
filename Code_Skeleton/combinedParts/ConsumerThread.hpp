@@ -4,7 +4,7 @@
 #include "Thread.hpp"
 #include "utils.hpp"
 #include "board_utils.hpp"
-#include "../Part1/PCQueue.hpp"
+#include "PCQueue.hpp"
 
 using board_utils::in_borders;
 using board_utils::neighbors_sum;

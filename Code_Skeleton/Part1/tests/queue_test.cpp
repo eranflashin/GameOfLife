@@ -1,4 +1,4 @@
-#include "../PCQueue.hpp"
+#include "../../combinedParts/PCQueue.hpp"
 
 struct check {
     int index;

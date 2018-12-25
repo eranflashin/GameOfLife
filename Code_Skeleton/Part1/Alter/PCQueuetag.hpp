@@ -1,8 +1,8 @@
 #ifndef _QUEUEL_H
 #define _QUEUEL_H
 
-#include "../Headers.hpp"
-#include "../Semaphore.hpp"
+#include "../../combinedParts/Headers.hpp"
+#include "../../combinedParts/Semaphore.hpp"
 // Single Producer - Multiple Consumer queue
 template <typename T>class PCQueue
 {
