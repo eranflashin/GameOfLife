@@ -50,7 +50,6 @@ void Semaphore::down() {
     pthread_mutex_unlock(&(this->lock));
 }
 
-//erronous
 void Semaphore::wait(){
     pthread_mutex_lock(&this->lock);
     while(value !=0){

@@ -80,7 +80,7 @@ void Game::_step(uint curr_gen) {
 }
 
 void Game::_destroy_game(){
-	//ends the polling of PCQueue (done by the threads)
+    //ends the polling of PCQueuet (done by the threads)
     for (auto &poison : makePoison(m_thread_num)) {
         pcQueue.push(poison);
     }

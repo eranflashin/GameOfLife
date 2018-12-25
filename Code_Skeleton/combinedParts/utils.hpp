@@ -10,7 +10,7 @@ namespace utils {
 	vector<string> split(const string& s, char delimiter); //Splits a string
 	bool_mat parse_lines(const string& filename);
 
-};
+}
 
 
 vector<bool> convert_to_bool(vector<string> vecOfOneZeroStrs);

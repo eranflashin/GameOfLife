@@ -1,5 +1,5 @@
-#ifndef __GAMETHREAD_H
-#define __GAMETHREAD_H
+#ifndef __CONSUMERTHREAD_H
+#define __CONSUMERTHREAD_H
 
 #include "Thread.hpp"
 #include "utils.hpp"

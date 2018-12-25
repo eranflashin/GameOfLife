@@ -3,7 +3,6 @@
 
 #include "Headers.hpp"
 #include "Semaphore.hpp"
-#include "ConsumersProducerLock.hpp"
 // Single Producer - Multiple Consumer queue
 template <typename T>class PCQueue
 {
@@ -21,49 +20,58 @@ public:
 
     PCQueue();
 
-    ~PCQueue()= default;
+    ~PCQueue();
 
 
 private:
-    queue<T> pcQ;
-    Semaphore avail_items;
-    ConsumersProducerLock lock;
-    pthread_mutex_t queueEditingLock;
+    queue<T> pcQueue;
+    Semaphore availableItems;
+    pthread_mutex_t vip_lock;
+    pthread_mutex_t commoners_lock;
+
 };
 // Recommendation: Use the implementation of the std::queue for this exercise
 
 template<typename T>
-PCQueue<T>::PCQueue() : pcQ(), avail_items(), lock() {
+PCQueue<T>::PCQueue() : pcQueue(), availableItems() {
+    vip_lock = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
+    pthread_mutex_init(&vip_lock, nullptr);
 
-    this->queueEditingLock = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
-    pthread_mutex_init(&(this->queueEditingLock), nullptr);
+    commoners_lock = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
+    pthread_mutex_init(&commoners_lock, nullptr);
 }
 
+template<typename T>
+PCQueue<T>::~PCQueue() {
+    pthread_mutex_destroy(&commoners_lock);
+    pthread_mutex_destroy(&vip_lock);
+}
 
 template<typename T>
 T PCQueue<T>::pop() {
-    avail_items.down();
+    availableItems.down();
+    pthread_mutex_lock(&commoners_lock);
 
-    lock.consumer_lock();
+    pthread_mutex_lock(&vip_lock);
 
-    pthread_mutex_lock(&queueEditingLock);
-    T item = pcQ.front();
-    pcQ.pop();
-    pthread_mutex_unlock(&queueEditingLock);
+    T item = pcQueue.front();
+    pcQueue.pop();
 
-    lock.consumer_unlock();
+    pthread_mutex_unlock(&vip_lock);
+
+    pthread_mutex_unlock(&commoners_lock);
 
     return item;
 }
 
 template<typename T>
 void PCQueue<T>::push(const T &item) {
-    lock.producer_lock();
+    pthread_mutex_lock(&vip_lock);
 
-    pcQ.push(item);
-    avail_items.up();
+    pcQueue.push(item);
+    availableItems.up();
 
-    lock.producer_unlock();
+    pthread_mutex_unlock(&vip_lock);
 }
 
 
