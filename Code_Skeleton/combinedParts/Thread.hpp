@@ -1,7 +1,7 @@
 #ifndef __THREAD_H
 #define __THREAD_H
 
-#include "../Part1/Headers.hpp"
+#include "Headers.hpp"
 class Thread
 {
 public:
@@ -14,16 +14,14 @@ public:
 	/** Returns true if the thread was successfully started, false if there was an error starting the thread */
 	bool start()
 	{
-        int result = pthread_create(&(this->m_thread), nullptr, this->entry_func, this);
+        int result = pthread_create(&(this->m_thread), nullptr,entry_func,(void*)(this));
         return (result == 0);
 	}
 
 	/** Will not return until the internal thread has exited. */
 	void join()
 	{
-        pthread_join(m_thread, nullptr); //entry_func doesn't return anything so nullptr,
-        //we can implement a pipe to share the whole matrix between the threads and to get the updated matrices
-        //from each thread
+        pthread_join(m_thread, nullptr);
 	}
 
 	/** Returns the thread_id **/

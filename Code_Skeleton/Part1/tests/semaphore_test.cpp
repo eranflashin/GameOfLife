@@ -1,4 +1,4 @@
-#include "../Semaphore.hpp"
+#include "../../combinedParts/Semaphore.hpp"
 
 struct s_semaphore {
     Semaphore *s;
