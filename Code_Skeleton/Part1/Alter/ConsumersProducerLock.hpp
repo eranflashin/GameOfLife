@@ -1,7 +1,7 @@
 #ifndef __CONSUMERSPRODUCERSLOCK_H
 #define __CONSUMERSPRODUCERSLOCK_H
 
-#include "Headers.hpp"
+#include "../../combinedParts/Headers.hpp"
 
 class ConsumersProducerLock {
     public:

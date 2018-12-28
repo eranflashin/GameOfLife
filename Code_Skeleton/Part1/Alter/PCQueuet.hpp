@@ -7,7 +7,7 @@
 
 // Single Producer - Multiple Consumer queue
 template<typename T>
-class PCQueuet {
+class PCQueue {
 
 public:
     // Blocks while queue is empty. When queue holds items, allows for a single
@@ -20,9 +20,9 @@ public:
     // Assumes single producer
     void push(const T &item);
 
-    PCQueuet();
+    PCQueue();
 
-    ~PCQueuet() = default;
+    ~PCQueue() = default;
 
 
 private:
@@ -34,7 +34,7 @@ private:
 // Recommendation: Use the implementation of the std::queue for this exercise
 
 template<typename T>
-PCQueuet<T>::PCQueuet() : pcQ(), avail_items(), lock() {
+PCQueue<T>::PCQueue() : pcQ(), avail_items(), lock() {
 
     this->queueEditingLock = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
     pthread_mutex_init(&(this->queueEditingLock), nullptr);
@@ -42,7 +42,7 @@ PCQueuet<T>::PCQueuet() : pcQ(), avail_items(), lock() {
 
 
 template<typename T>
-T PCQueuet<T>::pop() {
+T PCQueue<T>::pop() {
     avail_items.down();
 
     lock.consumer_lock();
@@ -58,7 +58,7 @@ T PCQueuet<T>::pop() {
 }
 
 template<typename T>
-void PCQueuet<T>::push(const T &item) {
+void PCQueue<T>::push(const T &item) {
     lock.producer_lock();
 
     pcQ.push(item);

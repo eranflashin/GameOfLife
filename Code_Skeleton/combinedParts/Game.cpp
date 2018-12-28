@@ -2,9 +2,7 @@
 
 /*--------------------------------------------------------------------------------
 
- ToDo: can we assume start return ok?
-        is it ok in workload to write into different rows of next simultanously?
-        ConsumerProducerLock- is it too complex?
+
 --------------------------------------------------------------------------------*/
 
 Game::Game(game_params params) : 
