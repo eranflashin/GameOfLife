@@ -5,6 +5,7 @@
 #include "board_utils.hpp"
 #include "ConsumerThread.hpp"
 #include "PCQueue.hpp"
+#include "CounterBarrier.hpp"
 
 using namespace board_utils;
 
@@ -60,7 +61,7 @@ private:
 	bool_mat curr,next;
     PCQueue<Job> pcQueue;
     vector<Job> jobs;
-    Semaphore barrier;
+	CounterBarrier barrier;
     pthread_mutex_t timerLock;
 };
 #endif

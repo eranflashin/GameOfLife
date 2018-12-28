@@ -1,7 +1,8 @@
 #include "ConsumerThread.hpp"
 
 
-ConsumerThread::ConsumerThread(uint id, bool_mat &curr, bool_mat &next, vector<float> &tile_hist,PCQueue<Job> &pcQueue, Semaphore &barrier, pthread_mutex_t &timerLock)
+ConsumerThread::ConsumerThread(uint id, bool_mat &curr, bool_mat &next, vector<float> &tile_hist, PCQueue<Job> &pcQueue,
+                               CounterBarrier &barrier, pthread_mutex_t &timerLock)
         : Thread(id), curr(curr), next(next), tile_hist(tile_hist), pcQueue(pcQueue), barrier(barrier),
           timerLock(timerLock) {}
 
