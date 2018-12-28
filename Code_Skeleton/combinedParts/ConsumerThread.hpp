@@ -11,19 +11,18 @@ using board_utils::in_borders;
 using board_utils::neighbors_sum;
 
 
-
 class ConsumerThread : public Thread {
 
 public:
     ConsumerThread(uint id, bool_mat &curr, bool_mat &next, vector<float> &tile_hist, PCQueue<Job> &pcQueue,
-                   CounterBarrier &barrier, pthread_mutex_t &timerLock);
+                   Barrier &barrier, pthread_mutex_t &timerLock);
     ~ConsumerThread()= default;
 
 protected:
     bool_mat &curr,&next;
     vector<float> &tile_hist;
     PCQueue<Job> &pcQueue;
-    CounterBarrier &barrier;
+    Barrier &barrier;
     pthread_mutex_t &timerLock;
 
     void thread_workload() override;

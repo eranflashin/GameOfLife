@@ -3,11 +3,11 @@
 
 #include "utils.hpp"
 
-class CounterBarrier {
+class Barrier {
 public:
-    CounterBarrier();
+    Barrier();
 
-    ~CounterBarrier();
+    ~Barrier();
 
     void down();
 

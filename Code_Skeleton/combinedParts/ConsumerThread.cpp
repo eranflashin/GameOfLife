@@ -2,7 +2,7 @@
 
 
 ConsumerThread::ConsumerThread(uint id, bool_mat &curr, bool_mat &next, vector<float> &tile_hist, PCQueue<Job> &pcQueue,
-                               CounterBarrier &barrier, pthread_mutex_t &timerLock)
+                               Barrier &barrier, pthread_mutex_t &timerLock)
         : Thread(id), curr(curr), next(next), tile_hist(tile_hist), pcQueue(pcQueue), barrier(barrier),
           timerLock(timerLock) {}
 
@@ -29,6 +29,7 @@ void ConsumerThread::thread_workload() {
       pthread_mutex_unlock(&timerLock);
 
       barrier.down();
+
   }
 }
 

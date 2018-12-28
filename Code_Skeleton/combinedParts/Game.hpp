@@ -61,7 +61,7 @@ private:
 	bool_mat curr,next;
     PCQueue<Job> pcQueue;
     vector<Job> jobs;
-	CounterBarrier barrier;
+    Barrier barrier;
     pthread_mutex_t timerLock;
 };
 #endif

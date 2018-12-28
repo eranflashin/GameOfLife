@@ -1,7 +1,7 @@
 #include "CounterBarrier.hpp"
 
 
-CounterBarrier::CounterBarrier() {
+Barrier::Barrier() {
 
     value = 0;
 
@@ -13,12 +13,12 @@ CounterBarrier::CounterBarrier() {
 }
 
 
-CounterBarrier::~CounterBarrier() {
+Barrier::~Barrier() {
     pthread_cond_destroy(&zero);
     pthread_mutex_destroy(&glob_lock);
 }
 
-void CounterBarrier::down() {
+void Barrier::down() {
     pthread_mutex_lock(&glob_lock);
 
     value--;
@@ -29,7 +29,7 @@ void CounterBarrier::down() {
     pthread_mutex_unlock(&glob_lock);
 }
 
-void CounterBarrier::wait() {
+void Barrier::wait() {
     pthread_mutex_lock(&glob_lock);
 
     while (value > 0) {
@@ -39,7 +39,7 @@ void CounterBarrier::wait() {
     pthread_mutex_unlock(&glob_lock);
 }
 
-void CounterBarrier::up() {
+void Barrier::up() {
     pthread_mutex_lock(&glob_lock);
 
     value++;
