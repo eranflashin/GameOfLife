@@ -21,14 +21,13 @@ void ConsumerThread::thread_workload() {
       execute(job);
      //stop timer;
       auto gen_end = std::chrono::system_clock::now();
-      barrier.down();
-
 
       //append duration to shared tile history vec
       pthread_mutex_lock(&timerLock);
       tile_hist.push_back((float)std::chrono::duration_cast<std::chrono::microseconds>(gen_end - gen_start).count());
       pthread_mutex_unlock(&timerLock);
 
+      barrier.down();
   }
 }
 
