@@ -33,6 +33,7 @@ void Barrier::wait() {
     pthread_mutex_lock(&glob_lock);
 
     while (value > 0) {
+
         pthread_cond_wait(&zero, &glob_lock);
     }
 
@@ -40,11 +41,8 @@ void Barrier::wait() {
 }
 
 void Barrier::up() {
-    pthread_mutex_lock(&glob_lock);
 
     value++;
-
-    pthread_mutex_unlock(&glob_lock);
 }
 
 
