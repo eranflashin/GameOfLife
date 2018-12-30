@@ -49,7 +49,7 @@
 
 
     for(uint start_row=0; start_row<height_board-rows_last_job; start_row+=rows_per_reg_job){
-        jobVec.push_back(Job{start_row,start_row+rows_per_reg_job, false});
+        jobVec.push_back(Job{start_row, start_row + rows_per_reg_job, false});
     }
 
     jobVec.push_back(Job{height_board-rows_last_job,height_board,false});

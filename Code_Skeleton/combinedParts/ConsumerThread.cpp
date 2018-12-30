@@ -8,7 +8,7 @@ ConsumerThread::ConsumerThread(uint id, bool_mat &curr, bool_mat &next, vector<f
 
 void ConsumerThread::thread_workload() {
   while(true){
-      // ?
+
       //pop job from queue
       Job job=pcQueue.pop();
 

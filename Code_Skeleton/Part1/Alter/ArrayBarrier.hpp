@@ -1,5 +1,0 @@
-#ifndef __ARRAYBARRIER_HPP
-#define __ARRAYBARRIER_HPP
-
-
-#endif //OSHW3_ARRAYBARRIER_HPP
