@@ -64,13 +64,17 @@ void Game::_init_game() {
 }
 
 void Game::_step(uint curr_gen) {
+
+	for (int i = 0; i < jobs.size(); i++) {
+		barrier.up();
+	}
 	// Push jobs to queue
 	for(auto &job : jobs){
 		pcQueue.push(job);
-		barrier.up();
 	}
 
 	// Wait for the workers to finish calculating
+
 	barrier.wait();
 
 	// Swap pointers between current and next field
@@ -78,7 +82,7 @@ void Game::_step(uint curr_gen) {
 }
 
 void Game::_destroy_game(){
-    //ends the polling of PCQueuet (done by the threads)
+	//ends the polling of PCQueue (done by the threads)
     for (auto &poison : makePoison(m_thread_num)) {
         pcQueue.push(poison);
     }
